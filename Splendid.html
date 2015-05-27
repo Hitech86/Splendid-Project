@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <link href="Style/main.css" type="text/css" rel="stylesheet" />
+    <script type="text/javascript" src="Script/common.js"></script>
+    <script type="text/javascript" src="Script/main.js"></script>
+    <script type="text/javascript" src="Script/gamedata.js"></script>
+    <script type="text/javascript" src="Script/mouse.js"></script>
+    <title>Splendid</title>
+</head>
+
+<body onload="applicationInitialize()">
+    <div id="gameTitle">
+        <p>Splendid</p>
+    </div>
+    <section id="CanvasSection">
+        <canvas id="canvas" width="830" height="700" class="playAreas"></canvas>
+        <button id="buttonStart" onclick="startGame()">Start</button>
+        <button id="buttonQuit" onclick="quitGame()">Quit</button>
+        <button id="buttonDone" onclick="done()">Done</button>
+        <img id="greenCard" src="Images/greencard.gif" style="display:none;" />
+        <img id="yellowCard" src="Images/yellowcard.gif" style="display:none;" />
+        <img id="blueCard" src="Images/bluecard.gif" style="display:none;" />
+        <img id="whiteCard" src="Images/whitecard.gif" style="display:none;" />
+        <img id="yellowCoin" src="Images/yellowcoin.png" style="display:none;" />
+        <img id="blackCoin" src="Images/blackcoin.png" style="display:none;" />
+        <img id="whiteCoin" src="Images/whitecoin.png" style="display:none;" />
+        <img id="redCoin" src="Images/redcoin.png" style="display:none;" />
+        <img id="greenCoin" src="Images/greencoin.png" style="display:none;" />
+        <img id="blueCoin" src="Images/bluecoin.png" style="display:none;" />
+        <img id="Henry" src="Images/Henry.png" style="display:none;" />
+        <img id="Elizabeth" src="Images/Elizabeth.png" style="display:none;" />
+        <img id="JonPaul" src="Images/JonPaul.png" style="display:none;" />
+        <img id="DonJuan" src="Images/DonJuan.png" style="display:none;" />
+        <img id="Kathryn" src="Images/Kathryn.png" style="display:none;" />
+        <img id="Teresa" src="Images/Teresa.png" style="display:none;" />
+        <img id="Joan" src="Images/Joan.png" style="display:none;" />
+        <img id="Columbus" src="Images/Columbus.png" style="display:none;" />
+        <img id="Violet" src="Images/Violet.png" style="display:none;" />
+        <img id="William" src="Images/William.png" style="display:none;" />
+    </section>
+    <dialog id="dialog">
+        <div id="dialogboxheader">Purchase or reserve a card</div>
+        <div id="dialogboxbody">
+            <canvas id="dCanvas" width="150" height="150" class="playAreas"></canvas>
+        </div>
+        <div id="dialogboxfoot">
+            <button id="buttonOk" onclick="ok()">Ok</button>
+            <button id="buttonReserve" onclick="reserve()">Reserve</button>
+            <button id="buttonCancel" onclick="cancel()">Cancel</button>
+        </div>
+    </dialog>
+</body>
+</html>	
