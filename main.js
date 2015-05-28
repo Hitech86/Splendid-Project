@@ -105,7 +105,6 @@ function done() {
     if (application.activePlayer == application.startPlayer) {
         //alert("A round just ended");
     }
-    clearGameBoard();
     updatePlayAreas();
 }
 
@@ -142,6 +141,7 @@ function nextPlayer(player) {
 }
 
 function updatePlayAreas() {
+    clearGameBoard();
     displayPlayerNames();
     displayGameDecks();
     displayFaceUpCards();
@@ -211,13 +211,16 @@ function displayGameDecks() {
     application.context.fillStyle = "white";
     application.context.drawImage(imgBlue, application.padding, yPos, c.width, c.height);
     application.context.fillText(application.blueDrawDeck.length, application.padding + c.fontMargin, yPos + c.fontHeight);
+
 }
+
+
 
 function displayFaceUpCards() {
     var yPos = application.nobleInfo.height + (application.padding * 2);
     var xPos = (application.padding * 2) + application.cardInfo.width;
 
-    for (i = 0; i < application.greenFaceUpCards.length; i++) {
+    for (i = 0; i < application.greenFaceUpCards.length; i++) {       
         displayCardInfo(application.context, application.greenFaceUpCards[i], xPos, yPos);
         application.greenFaceUpCards[i].xPos = xPos;
         application.greenFaceUpCards[i].yPos = yPos;
@@ -239,93 +242,93 @@ function displayFaceUpCards() {
         displayCardInfo(application.context, application.blueFaceUpCards[i], xPos, yPos);
         application.blueFaceUpCards[i].xPos = xPos;
         application.blueFaceUpCards[i].yPos = yPos;
-        xPos += application.padding + application.cardInfo.width;
+        xPos += application.padding + application.cardInfo.width;        
     }
 }
 
-function displayCardInfo(ctx, card, x, y) {
-    var c = application.cardInfo;
-    var img = document.getElementById("whiteCard");
-    ctx.drawImage(img, x, y, c.width, c.height);
+    function displayCardInfo(ctx, card, x, y) {
+        var c = application.cardInfo;
+        var img = document.getElementById("whiteCard");
+        ctx.drawImage(img, x, y, c.width, c.height);
 
-    var face = application.cardFaceInfo;
-    ctx.font = face.font;
-    ctx.fillStyle = "black";
-    var tokenColor = card.TokenColor.toLowerCase();
+        var face = application.cardFaceInfo;
+        ctx.font = face.font;
+        ctx.fillStyle = "black";
+        var tokenColor = card.TokenColor.toLowerCase();
 
-    var xPos = x + face.fontMargin;
-    var yPos = y + face.fontHeight;
-    if (card.Value > 0) ctx.fillText(card.Value, xPos, yPos);
+        var xPos = x + face.fontMargin;
+        var yPos = y + face.fontHeight;
+        if (card.Value > 0) ctx.fillText(card.Value, xPos, yPos);
 
-    xPos = x + application.cardInfo.width - (5 + face.tokenWidth);
-    yPos = y + 5;
+        xPos = x + application.cardInfo.width - (5 + face.tokenWidth);
+        yPos = y + 5;
 
-    var currentImage = document.getElementById(tokenColor + "Coin");
-    ctx.drawImage(currentImage, xPos, yPos, face.tokenWidth, face.tokenHeight);
+        var currentImage = document.getElementById(tokenColor + "Coin");
+        ctx.drawImage(currentImage, xPos, yPos, face.tokenWidth, face.tokenHeight);
 
-    xPos = x + 5;
-    yPos = y + application.cardInfo.height - 5 - face.costHeight;
-    ctx.font = face.costFont;
-    for (c = 0; c < card.CardCost.length; c++) {
-        currentImage = document.getElementById(tokenColor = card.CardCost[c].Color.toLowerCase() + "Coin");
-        ctx.drawImage(currentImage, xPos, yPos, face.costWidth, face.costHeight);
-        if (card.CardCost[c].Color.toLowerCase() == "black" || card.CardCost[c].Color.toLowerCase() == "blue" || card.CardCost[c].Color.toLowerCase() == "red") {
-            ctx.fillStyle = "white";
+        xPos = x + 5;
+        yPos = y + application.cardInfo.height - 5 - face.costHeight;
+        ctx.font = face.costFont;
+        for (c = 0; c < card.CardCost.length; c++) {
+            currentImage = document.getElementById(tokenColor = card.CardCost[c].Color.toLowerCase() + "Coin");
+            ctx.drawImage(currentImage, xPos, yPos, face.costWidth, face.costHeight);
+            if (card.CardCost[c].Color.toLowerCase() == "black" || card.CardCost[c].Color.toLowerCase() == "blue" || card.CardCost[c].Color.toLowerCase() == "red") {
+                ctx.fillStyle = "white";
+            }
+            else {
+                ctx.fillStyle = "black";
+            }
+            ctx.fillText(card.CardCost[c].Quantity, xPos + 4, yPos + 12);
+            yPos -= face.costHeight;
         }
-        else {
-            ctx.fillStyle = "black";
+
+    }
+
+    function displayGameTokens() {
+        var yPos = application.playAreas[4].yPos + application.padding;
+        var xPos = application.playAreas[4].xPos + (application.playAreas[4].width - application.padding - application.tokenInfo.width);
+        application.context.font = application.tokenInfo.font;
+
+        for (i = 0; i <= 5; i++) {
+            currentImageID = application.tokens[i].ImageId;
+            currentImage = document.getElementById(currentImageID);
+            application.context.drawImage(currentImage, xPos, yPos, application.tokenInfo.width, application.tokenInfo.height);
+            if (application.tokens[i].Color == "black" || application.tokens[i].Color == "blue" || application.tokens[i].Color == "red") {
+                application.context.fillStyle = "white";
+            }
+            else {
+                application.context.fillStyle = "black";
+            }
+            application.context.fillText(application.tokens[i].Tokens, xPos + application.tokenInfo.fontMargin, yPos + application.tokenInfo.fontHeight);
+            yPos += application.tokenInfo.height + application.padding;
         }
-        ctx.fillText(card.CardCost[c].Quantity, xPos + 4, yPos + 12);
-        yPos -= face.costHeight;
     }
 
-}
+    function displayGameNobles() {
+        var n = application.nobleInfo;
+        var xPos = application.playAreas[4].xPos + application.padding;
+        var yPos = application.playAreas[4].yPos + application.padding;
+        var currentImageID;
+        var currentImage;
 
-function displayGameTokens() {
-    var yPos = application.playAreas[4].yPos + application.padding;
-    var xPos = application.playAreas[4].xPos + (application.playAreas[4].width - application.padding - application.tokenInfo.width);
-    application.context.font = application.tokenInfo.font;
-
-    for (i = 0; i <= 5; i++) {
-        currentImageID = application.tokens[i].ImageId;
-        currentImage = document.getElementById(currentImageID);
-        application.context.drawImage(currentImage, xPos, yPos, application.tokenInfo.width, application.tokenInfo.height);
-        if (application.tokens[i].Color == "black" || application.tokens[i].Color == "blue" || application.tokens[i].Color == "red") {
-            application.context.fillStyle = "white";
+        for (i = 0; i < application.numberOfGameNobles; i++) {
+            currentImageID = application.noblesFaceUp[i].ImageId;
+            currentImage = document.getElementById(currentImageID);
+            application.context.drawImage(currentImage, xPos, yPos, n.width, n.height);
+            xPos += n.width + application.padding;
         }
-        else {
-            application.context.fillStyle = "black";
+    }
+
+    function setStartingValues() {
+        var startingValues = initializeStartingValues();
+        application.numberOfGameNobles = startingValues[(application.numberOfPlayers - 2)].nobles;
+        application.numberOfTokens = startingValues[(application.numberOfPlayers - 2)].tokens;
+        application.greenDrawDeck = initializeGreenDeck();
+        application.yellowDrawDeck = initializeYellowDeck();
+        application.blueDrawDeck = initializeBlueDeck();
+        application.noblesDeck = initializeNobles();
+        application.tokens = initializeTokens();
+        for (i = 0; i <= 4; i++) {
+            application.tokens[i].Tokens = application.numberOfTokens;
         }
-        application.context.fillText(application.tokens[i].Tokens, xPos + application.tokenInfo.fontMargin, yPos + application.tokenInfo.fontHeight);
-        yPos += application.tokenInfo.height + application.padding;
     }
-}
-
-function displayGameNobles() {
-    var n = application.nobleInfo;
-    var xPos = application.playAreas[4].xPos + application.padding;
-    var yPos = application.playAreas[4].yPos + application.padding;
-    var currentImageID;
-    var currentImage;
-
-    for (i = 0; i < application.numberOfGameNobles; i++) {
-        currentImageID = application.noblesFaceUp[i].ImageId;
-        currentImage = document.getElementById(currentImageID);
-        application.context.drawImage(currentImage, xPos, yPos, n.width, n.height);
-        xPos += n.width + application.padding;
-    }
-}
-
-function setStartingValues() {
-    var startingValues = initializeStartingValues();
-    application.numberOfGameNobles = startingValues[(application.numberOfPlayers - 2)].nobles;
-    application.numberOfTokens = startingValues[(application.numberOfPlayers - 2)].tokens;
-    application.greenDrawDeck = initializeGreenDeck();
-    application.yellowDrawDeck = initializeYellowDeck();
-    application.blueDrawDeck = initializeBlueDeck();
-    application.noblesDeck = initializeNobles();
-    application.tokens = initializeTokens();
-    for (i = 0; i <= 4; i++) {
-        application.tokens[i].Tokens = application.numberOfTokens;
-    }
-}
