@@ -2,8 +2,10 @@ function applicationInitialize() {
     application.canvas = document.getElementById("canvas");
     application.canvas.addEventListener("mousedown", doMouseDown, false);
     application.context = application.canvas.getContext("2d");
-    application.dCanvas = document.getElementById("dCanvas");
-    application.dContext = application.dCanvas.getContext("2d");
+    application.cCanvas = document.getElementById("cCanvas");
+    application.cContext = application.cCanvas.getContext("2d");
+	application.tCanvas = document.getElementById("tCanvas");
+    application.tContext = application.tCanvas.getContext("2d");
     updateButtonState();
     application.playAreas = initializePlayAreas();
     drawGameBoard();
@@ -29,32 +31,106 @@ function clearGameBoard() {
 }
 
 function getNumberOfPlayers() {
-    var numberOfPlayers = 0;
-    do {
-        numberOfPlayers = prompt("How many players (2 to 4)?");
-        if (numberOfPlayers == null) {
-            application.state = "Inactive";
-            updateButtonState();
-            break;
-        }
-    } while (!validNumberOfPlayers(numberOfPlayers))
-    return numberOfPlayers;
+	document.getElementById("numberOfPlayersDialog").showModal();
 }
+
+function playersCancel()
+{
+	application.state = "Inactive";
+	document.getElementById("numberOfPlayersDialog").close();
+	updateButtonState();
+}
+
+function playersOk()
+{
+	application.numberOfPlayers = document.getElementById("numberOfPlayers").value;
+	if (validNumberOfPlayers(application.numberOfPlayers))
+	{
+		if (application.state == "Active") {
+			document.getElementById("numberOfPlayersDialog").close();	
+			registerPlayers();
+		}
+	}
+}
+
+function validNumberOfPlayers(numberOfPlayers) {
+    if (numberOfPlayers > 1 && numberOfPlayers < 5) return true;
+	document.getElementById("playersInvalid").style.visibility = "visible";
+    return false;
+}
+
+function registerPlayers()
+{
+	document.getElementById("dialogboxheaderRegisterPlayer").innerHTML = "Enter a name for player " + (application.registeredPlayer + 1) + ":";
+	document.getElementById("registerPlayerDialog").showModal();	
+}
+
+function registerOk()
+{
+	document.getElementById("registerPlayerDialog").close();
+	application.players[application.registeredPlayer] = {
+		Name: document.getElementById("playerName").value,
+		Points: 0,
+		Tokens: [],
+		Cards: [],
+		Reserve: [],
+		Nobles: [],
+	};
+	if (isEmpty(application.players[application.registeredPlayer].Name)) application.players[application.registeredPlayer].Name = "Player " + (application.registeredPlayer + 1);
+	application.registeredPlayer++;
+	document.getElementById("playerName").value = "";
+	if (application.registeredPlayer < application.numberOfPlayers)
+	{
+		registerPlayers();
+	}
+	else 
+	{
+		finishGameSetup()
+	}
+}
+
+function registerCancel()
+{
+	document.getElementById("registerPlayerDialog").close();	
+	application.players[application.registeredPlayer].Name = "Player " + (application.registeredPlayer + 1);
+	application.registeredPlayer++;
+	if (application.registeredPlayer < application.numberOfPlayers)
+	{
+		registerPlayers();
+	}
+	else 
+	{
+		finishGameSetup()
+	}
+}
+
+function finishGameSetup()
+{
+	application.firstPlayer = selectRandomPlayer();
+	application.activePlayer = application.firstPlayer;
+	setStartingValues();
+	shufflePlayDecks();
+	drawStartingCards();
+	updatePlayAreas();
+}
+/* function registerPlayers() {
+    for (i = 0; i < application.numberOfPlayers; i++) {
+        application.players[i] = {
+            Name: prompt("Register player name for player #" + (i + 1) + ": "),
+            Points: 0,
+            Tokens: [],
+            Cards: [],
+            Reserve: [],
+            Nobles: [],
+        };
+        if (isEmpty(application.players[i].Name)) application.players[i].Name = "Player " + (i + 1);
+    }
+} */
 
 function startGame() {
     application.state = "Active";
     updateButtonState();
-    application.numberOfPlayers = getNumberOfPlayers();
-
-    if (application.state == "Active") {
-        registerPlayers();
-        application.firstPlayer = selectRandomPlayer();
-        application.activePlayer = application.firstPlayer;
-        setStartingValues();
-        shufflePlayDecks();
-        drawStartingCards();
-        updatePlayAreas();
-    }
+    getNumberOfPlayers();
 }
 
 function shufflePlayDecks() {
@@ -106,26 +182,6 @@ function done() {
         //alert("A round just ended");
     }
     updatePlayAreas();
-}
-
-function registerPlayers() {
-    for (i = 0; i < application.numberOfPlayers; i++) {
-        application.players[i] = {
-            Name: prompt("Register player name for player #" + (i + 1) + ": "),
-            Points: 0,
-            Tokens: [],
-            Cards: [],
-            Reserve: [],
-            Nobles: [],
-        };
-        if (isEmpty(application.players[i].Name)) application.players[i].Name = "Player " + (i + 1);
-    }
-}
-
-function validNumberOfPlayers(numberOfPlayers) {
-    if (numberOfPlayers > 1 && numberOfPlayers < 5) return true;
-    alert("Error: Invalid number of players. Splendid requires 2 to 4 players.");
-    return false;
 }
 
 function selectRandomPlayer() {
@@ -214,8 +270,6 @@ function displayGameDecks() {
 
 }
 
-
-
 function displayFaceUpCards() {
     var yPos = application.nobleInfo.height + (application.padding * 2);
     var xPos = (application.padding * 2) + application.cardInfo.width;
@@ -246,89 +300,108 @@ function displayFaceUpCards() {
     }
 }
 
-    function displayCardInfo(ctx, card, x, y) {
-        var c = application.cardInfo;
-        var img = document.getElementById("whiteCard");
-        ctx.drawImage(img, x, y, c.width, c.height);
+function displayCardInfo(ctx, card, x, y) {
+	var c = application.cardInfo;
+	var img = document.getElementById("whiteCard");
+	ctx.drawImage(img, x, y, c.width, c.height);
 
-        var face = application.cardFaceInfo;
-        ctx.font = face.font;
-        ctx.fillStyle = "black";
-        var tokenColor = card.TokenColor.toLowerCase();
+	var face = application.cardFaceInfo;
+	ctx.font = face.font;
+	ctx.fillStyle = "black";
+	var tokenColor = card.TokenColor.toLowerCase();
 
-        var xPos = x + face.fontMargin;
-        var yPos = y + face.fontHeight;
-        if (card.Value > 0) ctx.fillText(card.Value, xPos, yPos);
+	var xPos = x + face.fontMargin;
+	var yPos = y + face.fontHeight;
+	if (card.Value > 0) ctx.fillText(card.Value, xPos, yPos);
 
-        xPos = x + application.cardInfo.width - (5 + face.tokenWidth);
-        yPos = y + 5;
+	xPos = x + application.cardInfo.width - (5 + face.tokenWidth);
+	yPos = y + 5;
 
-        var currentImage = document.getElementById(tokenColor + "Coin");
-        ctx.drawImage(currentImage, xPos, yPos, face.tokenWidth, face.tokenHeight);
+	var currentImage = document.getElementById(tokenColor + "Coin");
+	ctx.drawImage(currentImage, xPos, yPos, face.tokenWidth, face.tokenHeight);
 
-        xPos = x + 5;
-        yPos = y + application.cardInfo.height - 5 - face.costHeight;
-        ctx.font = face.costFont;
-        for (c = 0; c < card.CardCost.length; c++) {
-            currentImage = document.getElementById(tokenColor = card.CardCost[c].Color.toLowerCase() + "Coin");
-            ctx.drawImage(currentImage, xPos, yPos, face.costWidth, face.costHeight);
-            if (card.CardCost[c].Color.toLowerCase() == "black" || card.CardCost[c].Color.toLowerCase() == "blue" || card.CardCost[c].Color.toLowerCase() == "red") {
-                ctx.fillStyle = "white";
-            }
-            else {
-                ctx.fillStyle = "black";
-            }
-            ctx.fillText(card.CardCost[c].Quantity, xPos + 4, yPos + 12);
-            yPos -= face.costHeight;
-        }
+	xPos = x + 5;
+	yPos = y + application.cardInfo.height - 5 - face.costHeight;
+	ctx.font = face.costFont;
+	for (c = 0; c < card.CardCost.length; c++) {
+		currentImage = document.getElementById(tokenColor = card.CardCost[c].Color.toLowerCase() + "Coin");
+		ctx.drawImage(currentImage, xPos, yPos, face.costWidth, face.costHeight);
+		if (card.CardCost[c].Color.toLowerCase() == "black" || card.CardCost[c].Color.toLowerCase() == "blue" || card.CardCost[c].Color.toLowerCase() == "red") {
+			ctx.fillStyle = "white";
+		}
+		else {
+			ctx.fillStyle = "black";
+		}
+		ctx.fillText(card.CardCost[c].Quantity, xPos + 4, yPos + 12);
+		yPos -= face.costHeight;
+	}
+}
 
-    }
+function reserveCard(deck, faceUpCards)
+{
+	var card = null;
+	var drawCard = null;
+	
+	if (application.players[application.activePlayer].Reserve.length < 3)
+	{
+		card = faceUpCards.splice(application.selectedCardIndex, 1)[0];
+		if (deck.length > 0)
+		{
+			drawCard = deck.pop();		
+			faceUpCards.push(drawCard);
+		}
+		application.players[application.activePlayer].Reserve.push(card);	
+	}
+}
 
-    function displayGameTokens() {
-        var yPos = application.playAreas[4].yPos + application.padding;
-        var xPos = application.playAreas[4].xPos + (application.playAreas[4].width - application.padding - application.tokenInfo.width);
-        application.context.font = application.tokenInfo.font;
+function displayGameTokens() {
+	var yPos = application.playAreas[4].yPos + application.padding;
+	var xPos = application.playAreas[4].xPos + (application.playAreas[4].width - application.padding - application.tokenInfo.width);
+	application.context.font = application.tokenInfo.font;
+	var diameter = application.tokenInfo.radius * 2;
+	
+	for (var i = 0; i <= 5; i++) {
+		currentImageID = application.tokens[i].ImageId;
+		currentImage = document.getElementById(currentImageID);
+		application.context.drawImage(currentImage, xPos, yPos, diameter, diameter);
+		application.tokens[i].xPos = xPos;
+		application.tokens[i].yPos = yPos;
+		if (application.tokens[i].Color == "black" || application.tokens[i].Color == "blue" || application.tokens[i].Color == "red") {
+			application.context.fillStyle = "white";
+		}
+		else {
+			application.context.fillStyle = "black";
+		}
+		application.context.fillText(application.tokens[i].Tokens, xPos + application.tokenInfo.fontMargin, yPos + application.tokenInfo.fontHeight);
+		yPos += application.tokenInfo.height + application.padding;
+	}
+}
 
-        for (i = 0; i <= 5; i++) {
-            currentImageID = application.tokens[i].ImageId;
-            currentImage = document.getElementById(currentImageID);
-            application.context.drawImage(currentImage, xPos, yPos, application.tokenInfo.width, application.tokenInfo.height);
-            if (application.tokens[i].Color == "black" || application.tokens[i].Color == "blue" || application.tokens[i].Color == "red") {
-                application.context.fillStyle = "white";
-            }
-            else {
-                application.context.fillStyle = "black";
-            }
-            application.context.fillText(application.tokens[i].Tokens, xPos + application.tokenInfo.fontMargin, yPos + application.tokenInfo.fontHeight);
-            yPos += application.tokenInfo.height + application.padding;
-        }
-    }
+function displayGameNobles() {
+	var n = application.nobleInfo;
+	var xPos = application.playAreas[4].xPos + application.padding;
+	var yPos = application.playAreas[4].yPos + application.padding;
+	var currentImageID;
+	var currentImage;
 
-    function displayGameNobles() {
-        var n = application.nobleInfo;
-        var xPos = application.playAreas[4].xPos + application.padding;
-        var yPos = application.playAreas[4].yPos + application.padding;
-        var currentImageID;
-        var currentImage;
+	for (i = 0; i < application.numberOfGameNobles; i++) {
+		currentImageID = application.noblesFaceUp[i].ImageId;
+		currentImage = document.getElementById(currentImageID);
+		application.context.drawImage(currentImage, xPos, yPos, n.width, n.height);
+		xPos += n.width + application.padding;
+	}
+}
 
-        for (i = 0; i < application.numberOfGameNobles; i++) {
-            currentImageID = application.noblesFaceUp[i].ImageId;
-            currentImage = document.getElementById(currentImageID);
-            application.context.drawImage(currentImage, xPos, yPos, n.width, n.height);
-            xPos += n.width + application.padding;
-        }
-    }
-
-    function setStartingValues() {
-        var startingValues = initializeStartingValues();
-        application.numberOfGameNobles = startingValues[(application.numberOfPlayers - 2)].nobles;
-        application.numberOfTokens = startingValues[(application.numberOfPlayers - 2)].tokens;
-        application.greenDrawDeck = initializeGreenDeck();
-        application.yellowDrawDeck = initializeYellowDeck();
-        application.blueDrawDeck = initializeBlueDeck();
-        application.noblesDeck = initializeNobles();
-        application.tokens = initializeTokens();
-        for (i = 0; i <= 4; i++) {
-            application.tokens[i].Tokens = application.numberOfTokens;
-        }
-    }
+function setStartingValues() {
+	var startingValues = initializeStartingValues();
+	application.numberOfGameNobles = startingValues[(application.numberOfPlayers - 2)].nobles;
+	application.numberOfTokens = startingValues[(application.numberOfPlayers - 2)].tokens;
+	application.greenDrawDeck = initializeGreenDeck();
+	application.yellowDrawDeck = initializeYellowDeck();
+	application.blueDrawDeck = initializeBlueDeck();
+	application.noblesDeck = initializeNobles();
+	application.tokens = initializeTokens();
+	for (i = 0; i <= 4; i++) {
+		application.tokens[i].Tokens = application.numberOfTokens;
+	}
+}
