@@ -10,12 +10,12 @@ function initializeStartingValues() {
 function initializeTokens() {
     var tokens = new Array();
 
-    tokens[0] = { Tokens: 0, ImageId: "blackCoin", Color: "black" };
-    tokens[1] = { Tokens: 0, ImageId: "whiteCoin", Color: "white" };
-    tokens[2] = { Tokens: 0, ImageId: "redCoin", Color: "red" };
-    tokens[3] = { Tokens: 0, ImageId: "greenCoin", Color: "green" };
-    tokens[4] = { Tokens: 0, ImageId: "blueCoin", Color: "blue" };
-    tokens[5] = { Tokens: 5, ImageId: "yellowCoin", Color: "yellow" };
+    tokens[0] = { xPos: 0, yPos: 0, Tokens: 0, ImageId: "blackCoin", Color: "black" };
+    tokens[1] = { xPos: 0, yPos: 0, Tokens: 0, ImageId: "whiteCoin", Color: "white" };
+    tokens[2] = { xPos: 0, yPos: 0, Tokens: 0, ImageId: "redCoin", Color: "red" };
+    tokens[3] = { xPos: 0, yPos: 0, Tokens: 0, ImageId: "greenCoin", Color: "green" };
+    tokens[4] = { xPos: 0, yPos: 0, Tokens: 0, ImageId: "blueCoin", Color: "blue" };
+    tokens[5] = { xPos: 0, yPos: 0, Tokens: 5, ImageId: "yellowCoin", Color: "yellow" };
 
     return tokens;
 }
