@@ -40,15 +40,64 @@
         <img id="Violet" src="Images/Violet.png" style="display:none;" />
         <img id="William" src="Images/William.png" style="display:none;" />
     </section>
-    <dialog id="dialog">
-        <div id="dialogboxheader">Purchase or reserve a card</div>
-        <div id="dialogboxbody">
-            <canvas id="dCanvas" width="150" height="150" class="playAreas"></canvas>
+	<dialog id="numberOfPlayersDialog">
+        <div id="dialogboxheader1">Enter the number of players (2 to 4):</div>
+        <div id="dialogboxbody1">
+			<br>
+			Number of players: <input class="textBox" id="numberOfPlayers" type="text" maxlength="1" size="3" required onkeydown="if (event.keyCode == 13) document.getElementById('buttonPlayersOk').click()"></input>
+			<br>
+			<div id="playersInvalid" class="validation" style="visibility: collapse";>
+				Invalid number of players
+			</div>
+			<br>
         </div>
-        <div id="dialogboxfoot">
-            <button id="buttonOk" onclick="ok()">Ok</button>
-            <button id="buttonReserve" onclick="reserve()">Reserve</button>
-            <button id="buttonCancel" onclick="cancel()">Cancel</button>
+        <div id="dialogboxfoot1">
+            <button id="buttonPlayersOk" onclick="playersOk()">Ok</button>
+            <button id="buttonPlayersCancel" onclick="playersCancel()">Cancel</button>
+        </div>
+    </dialog>
+	<dialog id="registerPlayerDialog">
+        <div id="dialogboxheaderRegisterPlayer">Enter a name for player 1:</div>
+        <div id="dialogboxbody1">
+			<br>
+			Player name: <input class="textBox" id="playerName" type="text" maxlength="15" size="15" required onkeydown="if (event.keyCode == 13) document.getElementById('buttonRegisterOk').click()"></input>
+			<br>
+			<br>
+        </div>
+        <div id="dialogboxfoot1">
+            <button id="buttonRegisterOk" onclick="registerOk()">Ok</button>
+            <button id="buttonRegisterCancel" onclick="registerCancel()">Cancel</button>
+        </div>
+    </dialog>
+    <dialog id="cardDialog">
+        <div id="dialogboxheader2">Purchase or reserve a card</div>
+        <div id="dialogboxbody2">
+            <canvas id="cCanvas" width="150" height="120" class="playAreas"></canvas>
+        </div>
+        <div id="dialogboxfoot2">
+            <button id="buttonPurchase" onclick="cardOk()">Purchase</button>
+            <button id="buttonReserve" onclick="cardReserve()">Reserve</button>
+            <button id="buttonCancel" onclick="cardCancel()">Cancel</button>
+        </div>
+    </dialog>
+	<dialog id="tokenDialog">
+        <div id="dialogboxheader3">Select tokens</div>
+        <div id="dialogboxbody3">
+            <canvas id="tCanvas" width="130" height="150" class="playAreas"></canvas>
+			<button id="buttonRemoveBlackToken" onclick="removeBlackToken()" class="tokenButton">-</button>
+			<button id="buttonAddBlackToken" onclick="addBlackToken()" class="tokenButton">+</button>
+			<button id="buttonRemoveWhiteToken" onclick="removeWhiteToken()" class="tokenButton">-</button>
+			<button id="buttonAddWhiteToken" onclick="addWhiteToken()" class="tokenButton">+</button>
+			<button id="buttonRemoveRedToken" onclick="removeRedToken()" class="tokenButton">-</button>
+			<button id="buttonAddRedToken" onclick="addRedToken()" class="tokenButton">+</button>
+			<button id="buttonRemoveGreenToken" onclick="removeGreenToken()" class="tokenButton">-</button>
+			<button id="buttonAddGreenToken" onclick="addGreenToken()" class="tokenButton">+</button>
+			<button id="buttonRemoveBlueToken" onclick="removeBlueToken()" class="tokenButton">-</button>
+			<button id="buttonAddBlueToken" onclick="addBlueToken()" class="tokenButton">+</button>
+        </div>
+        <div id="dialogboxfoot3">
+            <button id="buttonTokenOk" onclick="tokenOk()">Ok</button>
+            <button id="buttonTokenCancel" onclick="tokenCancel()">Cancel</button>
         </div>
     </dialog>
 </body>
