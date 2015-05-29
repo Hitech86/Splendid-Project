@@ -16,7 +16,7 @@ var application = {
     noblesFaceUp: null,
     noblesDeck: null,
     tokens: null,
-    tokenInfo: { width: 56, height: 56, font: "30px Areal", fontMargin: 20, fontHeight: 37 },
+    tokenInfo: { radius: 28, width: 56, height: 56, font: "30px Areal", fontMargin: 20, fontHeight: 37 },
     cardInfo: { width: 80, height: 95, font: "35px Areal", fontMargin: 20, fontHeight: 58 },
     cardFaceInfo: { font: "22px Areal", fontMargin: 6, fontHeight: 22, tokenWidth: 20, tokenHeight: 20, costWidth: 15, costHeight: 15, costFont: "13px Ariel Bold" },
     nobleInfo: { width: 80, height: 75 },
@@ -25,6 +25,7 @@ var application = {
     gameobjects: null,
     selectedCardIndex: null,
     selectedColor: null,
+	registeredPlayer: 0,
 };
 
 function isEmpty(s) {
