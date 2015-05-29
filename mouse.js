@@ -19,77 +19,132 @@ function checkPlayArea(x, y) {
                 {
                     if (detectRectCollision(x, y, application.greenFaceUpCards[g].xPos, application.greenFaceUpCards[g].yPos, application.cardInfo.width, application.cardInfo.height))
                     {
-                        document.getElementById("dialog").showModal();
+                        document.getElementById("cardDialog").showModal();
+						document.getElementById("buttonReserve").disabled = (application.players[application.activePlayer].Reserve.length >= 3);
                         application.selectedCardIndex = g;
                         application.selectedCardColor = "green";
-                        displayCardInfo(application.dContext, application.greenFaceUpCards[g], 10, 10);
+                        displayCardInfo(application.cContext, application.greenFaceUpCards[g], 70, 10);
                     }
                 }
-                for (var g = 0; g < application.yellowFaceUpCards.length; g++) {
-                    if (detectRectCollision(x, y, application.yellowFaceUpCards[g].xPos, application.yellowFaceUpCards[g].yPos, application.cardInfo.width, application.cardInfo.height)) {
-                        document.getElementById("dialog").showModal();
+                for (var g = 0; g < application.yellowFaceUpCards.length; g++) 
+				{
+                    if (detectRectCollision(x, y, application.yellowFaceUpCards[g].xPos, application.yellowFaceUpCards[g].yPos, application.cardInfo.width, application.cardInfo.height)) 
+					{
+                        document.getElementById("cardDialog").showModal();
+						document.getElementById("buttonReserve").disabled = (application.players[application.activePlayer].Reserve.length >= 3);
                         application.selectedCardIndex = g;
                         application.selectedCardColor = "yellow";
-                        displayCardInfo(application.dContext, application.yellowFaceUpCards[g], 10, 10);
+                        displayCardInfo(application.cContext, application.yellowFaceUpCards[g], 70, 10);
                     }
                 }
-                for (var g = 0; g < application.blueFaceUpCards.length; g++) {
-                    if (detectRectCollision(x, y, application.blueFaceUpCards[g].xPos, application.blueFaceUpCards[g].yPos, application.cardInfo.width, application.cardInfo.height)) {
-                        document.getElementById("dialog").showModal();
+                for (var g = 0; g < application.blueFaceUpCards.length; g++) 
+				{
+                    if (detectRectCollision(x, y, application.blueFaceUpCards[g].xPos, application.blueFaceUpCards[g].yPos, application.cardInfo.width, application.cardInfo.height)) 
+					{
+                        document.getElementById("cardDialog").showModal();
+						document.getElementById("buttonReserve").disabled = (application.players[application.activePlayer].Reserve.length >= 3);
                         application.selectedCardIndex = g;
                         application.selectedCardColor = "blue";
-                        displayCardInfo(application.dContext, application.blueFaceUpCards[g], 10, 10);
+                        displayCardInfo(application.cContext, application.blueFaceUpCards[g], 70, 10);
                     }
                 }
-                
+				for (var g = 0; g < (application.tokens.length - 1); g++)
+				{
+					if (detectTokenCollision(x, y, application.tokens[g].xPos, application.tokens[g].yPos, application.tokenInfo.radius))
+					{
+						document.getElementById("tokenDialog").showModal();
+						application.dialogTokens = displayDialogTokens();
+					}
+				}
             }
         }
     }
 }
-        
-function ok()
+  
+function displayDialogTokens() 
 {
-    document.getElementById("dialog").close();
+	application.tContext.font = "20px Arial Bold";
+	var fontMargin = 7;
+	var fontHeight = 19;
+	
+	var token = new Object();
+	var tokens = [];
+	var diameter = 25;
+	var padding = 4;
+	var xPos = 5;
+	var yPos = 5;
+	var offset = 100;
+	
+	for (var i = 0; i <= 4; i++) {
+		currentImageID = application.tokens[i].ImageId;
+		currentImage = document.getElementById(currentImageID);
+		application.tContext.drawImage(currentImage, xPos, yPos, diameter, diameter);
+		application.tContext.drawImage(currentImage, xPos + offset, yPos, diameter, diameter);
+		token = application.tokens[i];
+		if (token.Color == "black" || token.Color == "blue" || token.Color == "red") {
+			application.tContext.fillStyle = "white";
+		}
+		else {
+			application.tContext.fillStyle = "black";
+		}
+		application.tContext.fillText(token.Tokens, xPos + fontMargin, yPos + fontHeight);
+		yPos += diameter + padding;
+		tokens.push(token);
+	}
+	return tokens;
+}
+  
+function cardOk()
+{
+    document.getElementById("cardDialog").close();
 }
 
-function reserve()
+function cardReserve()
 {
-    var card = null;
-    var drawCard = null;
-    if (application.selectedCardColor == "green") {
-        card = application.greenFaceUpCards.splice(application.selectedCardIndex, 1)[0];
-        drawCard = application.greenDrawDeck.pop();
-        application.greenFaceUpCards.push(drawCard);
+	if (application.selectedCardColor == "green") {
+		reserveCard(application.greenDrawDeck, application.greenFaceUpCards)
     }
-
     if (application.selectedCardColor == "yellow") {
-        card = application.yellowFaceUpCards.splice(application.selectedCardIndex, 1)[0];
-        drawCard = application.yellowDrawDeck.pop();
-        application.yellowFaceUpCards.push(drawCard);
+		reserveCard(application.yellowDrawDeck, application.yellowFaceUpCards)
     }
-
     if (application.selectedCardColor == "blue") {
-        card = application.blueFaceUpCards.splice(application.selectedCardIndex, 1)[0];
-        drawCard = application.blueDrawDeck.pop();
-        application.blueFaceUpCards.push(drawCard);
+		reserveCard(application.blueDrawDeck, application.blueFaceUpCards)
     }
-    application.players[application.activePlayer].Reserve.push(card);
-    updatePlayAreas();
-    
+	
+	updatePlayAreas();
     displayActivePlayer();
-    document.getElementById("dialog").close();
+    document.getElementById("cardDialog").close();
 }
 
-function cancel()
+function cardCancel()
 {
     application.selectedCardColor = null;
     application.selectedCardIndex = null;
-    document.getElementById("dialog").close();
+    document.getElementById("cardDialog").close();
 }
+
+function tokenOk()
+{
+    document.getElementById("tokenDialog").close();
+}
+
+function tokenCancel()
+{
+    document.getElementById("tokenDialog").close();
+}
+
 
 function detectRectCollision(x, y, ox, oy, ow, oh) {
     if (x >= ox && x <= (ox + ow) && y >= oy && y <= (oy + oh)) {
         return true;
     }
     return false;
+}
+
+function detectTokenCollision(x, y, ox, oy, or)
+{
+	var dx = x - (ox + or);
+	var dy = y - (oy + or);
+	var distance = Math.sqrt(dx * dx + dy * dy);
+	return (distance <= or);
 }
